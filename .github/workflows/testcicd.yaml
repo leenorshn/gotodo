@@ -1,24 +1,26 @@
-name:Test go
-on:[push]
+name: Upload Go test results
+
+on: [push]
+
 jobs:
   build:
-    runs-on:ubuntu-latest
-    stratagy:
+    runs-on: ubuntu-latest
+    strategy:
       matrix:
-        go-version:['1.19','1.19.x']
+        go-version: ["1.19", "1.19.x"]
+
     steps:
-      -uses:actions/checkout@v3
-      -name: Setup Go
-      uses:actions/setup-go@v3
-      with:
-        go-version:${{matrix.go-version}}
-      -name:Install dependencies
-      run:go get .
-      -name: Test with go
-      run: go test -json > TestResult-${{matrix.go-version}}.json
-      -name:upload go test
-      uses:actions/upload-artifacts@v3
-      with:
-        name:Go-results-${{matrix.go-version}}
-        path:TestResult-${{matrix.go-version}}.json
-      
+      - uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Install dependencies
+        run: go get .
+      - name: Test with Go
+        run: go test -json > TestResults-${{ matrix.go-version }}.json
+      - name: Upload Go test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Go-results-${{ matrix.go-version }}
+          path: TestResults-${{ matrix.go-version }}.json
