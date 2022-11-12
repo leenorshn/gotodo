@@ -1,28 +1,112 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+type Trans {
+  _id: ID!
+  from: Account!
+  to: Account!
+  amount: Float!
+  operation: String!
+  date: Float!
+}
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
+type Account {
+  _id: ID!
+  balance: Float!
+  dette: Float!
+  gain: Float!
+  totalWithDraw: Float!
+  round: Int
+  createdAt: Float!
+  updatedAt: Float!
   user: User!
 }
 
+type Motar {
+  _id: ID!
+  association: String!
+  numero: String!
+  parking: String!
+  city: String!
+  owner: User!
+}
+
 type User {
-  id: ID!
+  _id: ID!
   name: String!
+  phone: String!
+  password: String!
+  dateNaissance: Int!
+  avatar: String!
+  address: String!
+  account: Account!
 }
 
 type Query {
-  todos: [Todo!]!
+  motars: [Motar!]!
+  trans: [Trans!]!
+  getTrans(id: ID!): Trans
+  accounts: [Account!]!
+  account(id: ID!): Account
+  users: [User!]!
+  user(id: ID!): User
 }
 
-input NewTodo {
+input NewUser {
+  name: String!
+  phone: String!
+  password: String!
+  dateNaissance: Int!
+  avatar: String
+  address: String!
+}
+
+input UpdateUser {
+  name: String
+  dateNaissance: Int
+  avatar: String
+  address: String
+}
+
+input NewMotor {
   text: String!
-  userId: String!
+  user: ID!
+  association: String!
+  numero: String!
+  parking: String!
+  city: String!
+}
+
+input UpdateMotor {
+  text: String
+  association: String
+  numero: String
+  parking: String
+  city: String
+}
+
+input NewTransaction {
+  from: String!
+  to: String!
+  amount: Float!
+  operation: String!
+}
+
+type Auth {
+  token: String!
+  user: User!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  #withdraw
+  withdraw(from: ID!, amount: Float!): Trans
+  payRent(from: ID!, amount: Float!): Trans
+  achatCarburant(from: ID!, amount: Float!, quantity: Float!): Trans!
+
+  #user mutations
+  loginUser(phone: String!, password: String!): Auth!
+  createUser(data: NewUser!): Auth!
+  updateUser(id: ID!, data: UpdateUser!): User
+  deleteUser(id: String!): Boolean!
+  changePassword(phone: String, newPassword: String!): Boolean!
 }

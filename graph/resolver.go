@@ -7,5 +7,8 @@ import "github.com/leenorshn/gotodo/graph/model"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	todos []*model.Todo
+	todos []*model.Trans
+	users []*model.User
+	user  *model.User
+	todo  *model.Account
 }
