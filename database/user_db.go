@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/leenorshn/gotodo/graph/model"
+	"github.com/leenorshn/gotodo/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (db *DB) InsertUser(newUser model.NewUser) *model.User {
+func (db *DB) InsertUser(newUser model.NewUser) *models.User {
 	userCollection := colHelper(db, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -21,7 +22,7 @@ func (db *DB) InsertUser(newUser model.NewUser) *model.User {
 		panic("Erreur d'insertion de donnee")
 	}
 
-	return &model.User{
+	return &models.User{
 		ID:    res.InsertedID.(primitive.ObjectID).Hex(),
 		Name:  newUser.Name,
 		Phone: newUser.Phone,
@@ -42,7 +43,7 @@ func (db *DB) DeleteUser(id string) bool {
 
 }
 
-func (db *DB) FindUsers() []*model.User {
+func (db *DB) FindUsers() []*models.User {
 
 	userCollection := colHelper(db, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -53,13 +54,13 @@ func (db *DB) FindUsers() []*model.User {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var users []*model.User
+	var users []*models.User
 
 	// Get a list of all returned documents and print them out.
 	// See the mongo.Cursor documentation for more examples of using cursors.
 	for cur.Next(ctx) {
 
-		var user *model.User
+		var user *models.User
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -78,7 +79,7 @@ func (db *DB) FindUsers() []*model.User {
 	return users
 }
 
-func (db *DB) FindUser(id string) *model.User {
+func (db *DB) FindUser(id string) *models.User {
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
@@ -86,7 +87,7 @@ func (db *DB) FindUser(id string) *model.User {
 	userCollection := colHelper(db, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	var user *model.User
+	var user *models.User
 
 	err = userCollection.FindOne(ctx, bson.M{"_id": ObjectID}).Decode(&user)
 	if err != nil {

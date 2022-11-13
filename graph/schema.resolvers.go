@@ -10,41 +10,42 @@ import (
 	"github.com/leenorshn/gotodo/database"
 	"github.com/leenorshn/gotodo/graph/generated"
 	"github.com/leenorshn/gotodo/graph/model"
+	"github.com/leenorshn/gotodo/models"
 )
 
 // Withdraw is the resolver for the withdraw field.
-func (r *mutationResolver) Withdraw(ctx context.Context, from string, amount float64) (*model.Trans, error) {
+func (r *mutationResolver) Withdraw(ctx context.Context, from string, amount float64) (*models.Trans, error) {
 	panic(fmt.Errorf("not implemented: Withdraw - withdraw"))
 }
 
 // PayRent is the resolver for the payRent field.
-func (r *mutationResolver) PayRent(ctx context.Context, from string, amount float64) (*model.Trans, error) {
+func (r *mutationResolver) PayRent(ctx context.Context, from string, amount float64) (*models.Trans, error) {
 	panic(fmt.Errorf("not implemented: PayRent - payRent"))
 }
 
 // AchatCarburant is the resolver for the achatCarburant field.
-func (r *mutationResolver) AchatCarburant(ctx context.Context, from string, amount float64, quantity float64) (*model.Trans, error) {
+func (r *mutationResolver) AchatCarburant(ctx context.Context, from string, amount float64, quantity float64) (*models.Trans, error) {
 	panic(fmt.Errorf("not implemented: AchatCarburant - achatCarburant"))
 }
 
 // LoginUser is the resolver for the loginUser field.
-func (r *mutationResolver) LoginUser(ctx context.Context, phone string, password string) (*model.Auth, error) {
+func (r *mutationResolver) LoginUser(ctx context.Context, phone string, password string) (*models.Auth, error) {
 	panic(fmt.Errorf("not implemented: LoginUser - loginUser"))
 }
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, data model.NewUser) (*model.Auth, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, data model.NewUser) (*models.Auth, error) {
 	user := db.InsertUser(data)
 	//generate user token for access with jwt
 	var token = "token"
-	return &model.Auth{
+	return &models.Auth{
 		Token: token,
 		User:  user,
 	}, nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (r *mutationResolver) UpdateUser(ctx context.Context, id string, data model.UpdateUser) (*model.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, data model.UpdateUser) (*models.User, error) {
 	panic(fmt.Errorf("not implemented: UpdateUser - updateUser"))
 }
 
@@ -61,38 +62,38 @@ func (r *mutationResolver) ChangePassword(ctx context.Context, phone *string, ne
 }
 
 // Motars is the resolver for the motars field.
-func (r *queryResolver) Motars(ctx context.Context) ([]*model.Motar, error) {
+func (r *queryResolver) Motars(ctx context.Context) ([]*models.Motar, error) {
 	panic(fmt.Errorf("not implemented: Motars - motars"))
 }
 
 // Trans is the resolver for the trans field.
-func (r *queryResolver) Trans(ctx context.Context) ([]*model.Trans, error) {
+func (r *queryResolver) Trans(ctx context.Context) ([]*models.Trans, error) {
 	panic(fmt.Errorf("not implemented: Trans - trans"))
 }
 
 // GetTrans is the resolver for the getTrans field.
-func (r *queryResolver) GetTrans(ctx context.Context, id string) (*model.Trans, error) {
+func (r *queryResolver) GetTrans(ctx context.Context, id string) (*models.Trans, error) {
 	panic(fmt.Errorf("not implemented: GetTrans - getTrans"))
 }
 
 // Accounts is the resolver for the accounts field.
-func (r *queryResolver) Accounts(ctx context.Context) ([]*model.Account, error) {
+func (r *queryResolver) Accounts(ctx context.Context) ([]*models.Account, error) {
 	panic(fmt.Errorf("not implemented: Accounts - accounts"))
 }
 
 // Account is the resolver for the account field.
-func (r *queryResolver) Account(ctx context.Context, id string) (*model.Account, error) {
+func (r *queryResolver) Account(ctx context.Context, id string) (*models.Account, error) {
 	panic(fmt.Errorf("not implemented: Account - account"))
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context) ([]*models.User, error) {
 	users := db.FindUsers()
 	return users, nil
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id string) (*models.User, error) {
 	return db.FindUser(id), nil
 }
 
@@ -105,6 +106,12 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 var (
 	db = database.ConnectDB()
 )

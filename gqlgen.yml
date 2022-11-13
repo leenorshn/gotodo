@@ -61,3 +61,13 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  User:
+    model: github.com/leenorshn/gotodo/models.User
+  Auth:
+    model: github.com/leenorshn/gotodo/models.Auth
+  Motar:
+    model: github.com/leenorshn/gotodo/models.Motar
+  Trans:
+    model: github.com/leenorshn/gotodo/models.Trans
+  Account:
+    model: github.com/leenorshn/gotodo/models.Account

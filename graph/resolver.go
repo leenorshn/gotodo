@@ -1,14 +1,9 @@
+//go:generate go run github.com/99designs/gqlgen -v
 package graph
-
-import "github.com/leenorshn/gotodo/graph/model"
 
 // This file will not be regenerated automatically.
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	todos []*model.Trans
-	users []*model.User
-	user  *model.User
-	todo  *model.Account
 }
