@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/leenorshn/gotodo/database"
 	"github.com/leenorshn/gotodo/graph/generated"
@@ -15,7 +16,12 @@ import (
 
 // Withdraw is the resolver for the withdraw field.
 func (r *mutationResolver) Withdraw(ctx context.Context, from string, amount float64) (*models.Trans, error) {
-	panic(fmt.Errorf("not implemented: Withdraw - withdraw"))
+	trans, err := db.Withdraw(from, float32(amount))
+	if err != nil {
+		log.Fatalln("Erreur survenu", err)
+	}
+
+	return trans, nil
 }
 
 // PayRent is the resolver for the payRent field.
@@ -78,12 +84,16 @@ func (r *queryResolver) GetTrans(ctx context.Context, id string) (*models.Trans,
 
 // Accounts is the resolver for the accounts field.
 func (r *queryResolver) Accounts(ctx context.Context) ([]*models.Account, error) {
-	panic(fmt.Errorf("not implemented: Accounts - accounts"))
+	accounts := db.GetAccounts()
+
+	return accounts, nil
 }
 
 // Account is the resolver for the account field.
 func (r *queryResolver) Account(ctx context.Context, id string) (*models.Account, error) {
-	panic(fmt.Errorf("not implemented: Account - account"))
+	account := db.FindAccount(id)
+
+	return account, nil
 }
 
 // Users is the resolver for the users field.
@@ -97,14 +107,27 @@ func (r *queryResolver) User(ctx context.Context, id string) (*models.User, erro
 	return db.FindUser(id), nil
 }
 
+// Date is the resolver for the date field.
+func (r *transResolver) Date(ctx context.Context, obj *models.Trans) (string, error) {
+	panic(fmt.Errorf("not implemented: Date - date"))
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Trans returns generated.TransResolver implementation.
+func (r *Resolver) Trans() generated.TransResolver { return &transResolver{r} }
+
+//func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type transResolver struct{ *Resolver }
+
+//type userResolver struct{ *Resolver }
 
 // !!! WARNING !!!
 // The code below was going to be deleted when updating resolvers. It has been copied here so you have

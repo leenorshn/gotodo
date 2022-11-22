@@ -15,12 +15,21 @@ import (
 
 func (db *DB) InsertUser(newUser model.NewUser) *models.User {
 	userCollection := colHelper(db, "users")
+	accountCollection := colHelper(db, "accounts")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	res, err := userCollection.InsertOne(ctx, newUser)
 	if err != nil {
 		panic("Erreur d'insertion de donnee")
 	}
+	resAccount, errAc := accountCollection.InsertOne(ctx, bson.D{
+		{Key: "user", Value: res.InsertedID},
+	})
+	if errAc != nil {
+		log.Fatalln("Erreur de creation de compte", errAc)
+	}
+
+	fmt.Println(resAccount.InsertedID)
 
 	return &models.User{
 		ID:    res.InsertedID.(primitive.ObjectID).Hex(),

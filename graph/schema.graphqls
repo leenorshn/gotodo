@@ -1,13 +1,13 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+scalar Date
 type Trans {
   _id: ID!
   from: Account!
-  to: Account!
   amount: Float!
   operation: String!
-  date: Float!
+  date: Date!
 }
 
 type Account {

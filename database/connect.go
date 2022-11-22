@@ -15,7 +15,7 @@ type DB struct {
 }
 
 func ConnectDB() *DB {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://leenorshn:SU5inlRbb4KDJeyR@cluster0.xhwvl.gcp.mongodb.net/innovdb?authSource=admin&replicaSet=atlas-fdxdca-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true"))
 	if err != nil {
 		log.Fatal(err)
 	}

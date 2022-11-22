@@ -39,6 +39,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Trans() TransResolver
 }
 
 type DirectiveRoot struct {
@@ -98,7 +99,6 @@ type ComplexityRoot struct {
 		From      func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Operation func(childComplexity int) int
-		To        func(childComplexity int) int
 	}
 
 	User struct {
@@ -131,6 +131,9 @@ type QueryResolver interface {
 	Account(ctx context.Context, id string) (*models.Account, error)
 	Users(ctx context.Context) ([]*models.User, error)
 	User(ctx context.Context, id string) (*models.User, error)
+}
+type TransResolver interface {
+	Date(ctx context.Context, obj *models.Trans) (string, error)
 }
 
 type executableSchema struct {
@@ -462,13 +465,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Trans.Operation(childComplexity), true
 
-	case "Trans.to":
-		if e.complexity.Trans.To == nil {
-			break
-		}
-
-		return e.complexity.Trans.To(childComplexity), true
-
 	case "User.account":
 		if e.complexity.User.Account == nil {
 			break
@@ -601,13 +597,13 @@ var sources = []*ast.Source{
 	{Name: "../schema.graphqls", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+scalar Date
 type Trans {
   _id: ID!
   from: Account!
-  to: Account!
   amount: Float!
   operation: String!
-  date: Float!
+  date: Date!
 }
 
 type Account {
@@ -1838,8 +1834,6 @@ func (ec *executionContext) fieldContext_Mutation_withdraw(ctx context.Context, 
 				return ec.fieldContext_Trans__id(ctx, field)
 			case "from":
 				return ec.fieldContext_Trans_from(ctx, field)
-			case "to":
-				return ec.fieldContext_Trans_to(ctx, field)
 			case "amount":
 				return ec.fieldContext_Trans_amount(ctx, field)
 			case "operation":
@@ -1904,8 +1898,6 @@ func (ec *executionContext) fieldContext_Mutation_payRent(ctx context.Context, f
 				return ec.fieldContext_Trans__id(ctx, field)
 			case "from":
 				return ec.fieldContext_Trans_from(ctx, field)
-			case "to":
-				return ec.fieldContext_Trans_to(ctx, field)
 			case "amount":
 				return ec.fieldContext_Trans_amount(ctx, field)
 			case "operation":
@@ -1973,8 +1965,6 @@ func (ec *executionContext) fieldContext_Mutation_achatCarburant(ctx context.Con
 				return ec.fieldContext_Trans__id(ctx, field)
 			case "from":
 				return ec.fieldContext_Trans_from(ctx, field)
-			case "to":
-				return ec.fieldContext_Trans_to(ctx, field)
 			case "amount":
 				return ec.fieldContext_Trans_amount(ctx, field)
 			case "operation":
@@ -2402,8 +2392,6 @@ func (ec *executionContext) fieldContext_Query_trans(ctx context.Context, field 
 				return ec.fieldContext_Trans__id(ctx, field)
 			case "from":
 				return ec.fieldContext_Trans_from(ctx, field)
-			case "to":
-				return ec.fieldContext_Trans_to(ctx, field)
 			case "amount":
 				return ec.fieldContext_Trans_amount(ctx, field)
 			case "operation":
@@ -2457,8 +2445,6 @@ func (ec *executionContext) fieldContext_Query_getTrans(ctx context.Context, fie
 				return ec.fieldContext_Trans__id(ctx, field)
 			case "from":
 				return ec.fieldContext_Trans_from(ctx, field)
-			case "to":
-				return ec.fieldContext_Trans_to(ctx, field)
 			case "amount":
 				return ec.fieldContext_Trans_amount(ctx, field)
 			case "operation":
@@ -2988,70 +2974,6 @@ func (ec *executionContext) fieldContext_Trans_from(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Trans_to(ctx context.Context, field graphql.CollectedField, obj *models.Trans) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Trans_to(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.To, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*models.Account)
-	fc.Result = res
-	return ec.marshalNAccount2ᚖgithubᚗcomᚋleenorshnᚋgotodoᚋmodelsᚐAccount(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Trans_to(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Trans",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "_id":
-				return ec.fieldContext_Account__id(ctx, field)
-			case "balance":
-				return ec.fieldContext_Account_balance(ctx, field)
-			case "dette":
-				return ec.fieldContext_Account_dette(ctx, field)
-			case "gain":
-				return ec.fieldContext_Account_gain(ctx, field)
-			case "totalWithDraw":
-				return ec.fieldContext_Account_totalWithDraw(ctx, field)
-			case "round":
-				return ec.fieldContext_Account_round(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Account_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Account_updatedAt(ctx, field)
-			case "user":
-				return ec.fieldContext_Account_user(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Trans_amount(ctx context.Context, field graphql.CollectedField, obj *models.Trans) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Trans_amount(ctx, field)
 	if err != nil {
@@ -3154,7 +3076,7 @@ func (ec *executionContext) _Trans_date(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Date, nil
+		return ec.resolvers.Trans().Date(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3166,19 +3088,19 @@ func (ec *executionContext) _Trans_date(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(float64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+	return ec.marshalNDate2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Trans_date(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Trans",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type Date does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6118,43 +6040,49 @@ func (ec *executionContext) _Trans(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Trans__id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "from":
 
 			out.Values[i] = ec._Trans_from(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "to":
-
-			out.Values[i] = ec._Trans_to(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "amount":
 
 			out.Values[i] = ec._Trans_amount(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "operation":
 
 			out.Values[i] = ec._Trans_operation(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "date":
+			field := field
 
-			out.Values[i] = ec._Trans_date(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Trans_date(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6636,6 +6564,21 @@ func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interf
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
 	res := graphql.MarshalBoolean(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
